@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">android_dz6</string>
+    <string name="dialog_title">menu dialog</string>
+    <string name="dialog_ok">Ok</string>
+    <string name="dialog_no">No</string>
+    <string name="dialog_random">Random</string>
+</resources>
