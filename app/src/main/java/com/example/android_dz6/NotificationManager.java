@@ -1,26 +1,25 @@
 package com.example.android_dz6;
 
 import android.app.NotificationChannel;
-import android.app.NotificationManager;
 import android.content.Context;
 import android.os.Build;
 import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 
-public class MyNotificationManager {
+public class NotificationManager {
 
-    private static final String CHANNEL_ID = "my_notification_id";
-    private static final String CHANNEL_NAME = "My Channel";
-    private static final String CHANNEL_DESCRIPTION = "My Channel Description";
+    private static final String CHANNEL_ID = "notification_id";
+    private static final String CHANNEL_NAME = "channel";
+    private static final String CHANNEL_DESCRIPTION = "channel description";
 
     public static void createNotificationChannel(Context context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             Log.d("NotificationManager", "Creating notification channel: " + CHANNEL_ID);
-            int importance = NotificationManager.IMPORTANCE_HIGH; // Изменено на HIGH
+            int importance = android.app.NotificationManager.IMPORTANCE_HIGH; // Изменено на HIGH
             NotificationChannel channel = new NotificationChannel(CHANNEL_ID, CHANNEL_NAME, importance);
             channel.setDescription(CHANNEL_DESCRIPTION);
-            NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
+            android.app.NotificationManager notificationManager = context.getSystemService(android.app.NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
             Log.d("NotificationManager", "Notification channel created: " + CHANNEL_ID);
         }
@@ -40,7 +39,7 @@ public class MyNotificationManager {
                         .bigText("Here is more detail about the notification that you should see."))
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
 
-        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        android.app.NotificationManager notificationManager = (android.app.NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
         if (notificationManager != null) {
             notificationManager.notify(1, builder.build());

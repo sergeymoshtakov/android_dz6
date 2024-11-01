@@ -25,21 +25,20 @@ import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity implements IText {
 
-    private Calendar dateAndTime;
-    private DatePickerDialog.OnDateSetListener dateListener;
+    private Calendar currentCalendar;
+    private DatePickerDialog.OnDateSetListener onDateSetListener;
 
-    private TextView editTimeTextView;
-    private EditText editTextMain;
-
+    private TextView timeTextView;
+    private EditText mainEditText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (view, insets) -> {
+            Insets systemInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            view.setPadding(systemInsets.left, systemInsets.top, systemInsets.right, systemInsets.bottom);
             return insets;
         });
 
@@ -50,16 +49,16 @@ public class MainActivity extends AppCompatActivity implements IText {
             getSupportActionBar().setDisplayShowTitleEnabled(false);
         }
 
-        init();
+        initializeViews();
 
-        MyNotificationManager.createNotificationChannel(this);
+        NotificationManager.createNotificationChannel(this);
 
-        dateAndTime = Calendar.getInstance();
-        dateListener = (DatePicker view, int year, int monthOfYear, int dayOfMonth) -> {
-            dateAndTime.set(Calendar.YEAR, year);
-            dateAndTime.set(Calendar.MONTH, monthOfYear);
-            dateAndTime.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-            setDate();
+        currentCalendar = Calendar.getInstance();
+        onDateSetListener = (DatePicker datePicker, int year, int month, int day) -> {
+            currentCalendar.set(Calendar.YEAR, year);
+            currentCalendar.set(Calendar.MONTH, month);
+            currentCalendar.set(Calendar.DAY_OF_MONTH, day);
+            updateDateDisplay();
         };
     }
 
@@ -70,42 +69,23 @@ public class MainActivity extends AppCompatActivity implements IText {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int itemId = item.getItemId();
+    public boolean onOptionsItemSelected(MenuItem menuItem) {
+        int itemId = menuItem.getItemId();
 
         if (!AppConstant.ALL_ACTIONS_MENU.contains(itemId)) {
-            return super.onOptionsItemSelected(item);
+            return super.onOptionsItemSelected(menuItem);
         }
 
         if (itemId == R.id.action_edit_text) {
-            EditTextDialog dialog = new EditTextDialog();
-            Bundle args = new Bundle();
-            args.putString("str", editTextMain.getText().toString());
-            dialog.setArguments(args);
-            dialog.show(getSupportFragmentManager(), "dialog");
-        }
-        else if (itemId == R.id.action_select_text) {
-            SelectTextDialog dialog = new SelectTextDialog();
-            dialog.show(getSupportFragmentManager(), "dialog");
-        }
-        else if (itemId == R.id.action_get_current_time) {
-            MyNotificationManager.showNotification(
-                    MainActivity.this,
-                    "Current date and time",
-                    TestUtils.getCurrentDateTime()
-            );
-        }
-        else if (itemId == R.id.action_change_date) {
-            showChoiceDate();
-        }
-        else if (itemId == R.id.action_show_notification) {
-            String text = editTextMain.getText().toString();
-            if (!text.isEmpty()) {
-                MyNotificationManager.showNotification(
-                        MainActivity.this,
-                        "Current text",
-                        text + " (" + TestUtils.getCurrentDateTime() + ")");
-            }
+            displayEditTextDialog();
+        } else if (itemId == R.id.action_select_text) {
+            displaySelectTextDialog();
+        } else if (itemId == R.id.action_get_current_time) {
+            showCurrentTimeNotification();
+        } else if (itemId == R.id.action_change_date) {
+            openDatePicker();
+        } else if (itemId == R.id.action_show_notification) {
+            showInputTextNotification();
         }
 
         return true;
@@ -113,27 +93,57 @@ public class MainActivity extends AppCompatActivity implements IText {
 
     @Override
     public void setText(String text) {
-        editTextMain.setText(text);
-        editTimeTextView.setText(TestUtils.getCurrentDateTime());
+        mainEditText.setText(text);
+        timeTextView.setText(TestUtils.getCurrentDateTime());
     }
 
-
-    private void init() {
-        editTimeTextView = findViewById(R.id.edit_time_text_view);
-        editTextMain = findViewById(R.id.edit_text_main);
+    private void initializeViews() {
+        timeTextView = findViewById(R.id.edit_time_text_view);
+        mainEditText = findViewById(R.id.edit_text_main);
     }
 
-    private void showChoiceDate() {
+    private void openDatePicker() {
         new DatePickerDialog(
                 MainActivity.this,
-                dateListener,
-                dateAndTime.get(Calendar.YEAR),
-                dateAndTime.get(Calendar.MONTH),
-                dateAndTime.get(Calendar.DAY_OF_MONTH)
+                onDateSetListener,
+                currentCalendar.get(Calendar.YEAR),
+                currentCalendar.get(Calendar.MONTH),
+                currentCalendar.get(Calendar.DAY_OF_MONTH)
         ).show();
     }
 
-    private void setDate() {
-        editTimeTextView.setText(TestUtils.getCurrentDateTime(dateAndTime));
+    private void updateDateDisplay() {
+        timeTextView.setText(TestUtils.getCurrentDateTime(currentCalendar));
+    }
+
+    private void displayEditTextDialog() {
+        EditTextDialog dialog = new EditTextDialog();
+        Bundle args = new Bundle();
+        args.putString("str", mainEditText.getText().toString());
+        dialog.setArguments(args);
+        dialog.show(getSupportFragmentManager(), "edit_dialog");
+    }
+
+    private void displaySelectTextDialog() {
+        SelectTextDialog dialog = new SelectTextDialog();
+        dialog.show(getSupportFragmentManager(), "select_dialog");
+    }
+
+    private void showCurrentTimeNotification() {
+        NotificationManager.showNotification(
+                MainActivity.this,
+                "Current date and time",
+                TestUtils.getCurrentDateTime()
+        );
+    }
+
+    private void showInputTextNotification() {
+        String inputText = mainEditText.getText().toString();
+        if (!inputText.isEmpty()) {
+            NotificationManager.showNotification(
+                    MainActivity.this,
+                    "Current input",
+                    inputText + " (" + TestUtils.getCurrentDateTime() + ")");
+        }
     }
 }

@@ -16,8 +16,8 @@ public class AppConstant {
         ALL_ACTIONS_MENU.add(R.id.action_show_notification);
 
         SELECT_TEXTS.add("Hello");
-        SELECT_TEXTS.add("Sergey");
-        SELECT_TEXTS.add("Moshtakov");
+        SELECT_TEXTS.add("Guten Tag");
+        SELECT_TEXTS.add("Bonjour");
         SELECT_TEXTS.add("How are you?");
         SELECT_TEXTS.add("New notification");
     }

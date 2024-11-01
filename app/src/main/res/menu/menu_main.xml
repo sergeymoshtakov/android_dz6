@@ -4,26 +4,26 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/action_edit_text"
-        android:title="Edit text"
+        android:title="Редагувати текст"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/action_select_text"
-        android:title="Select text"
+        android:title="Вибрати текст"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/action_get_current_time"
-        android:title="Get current time"
+        android:title="Отримати час"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/action_change_date"
-        android:title="Edit date"
+        android:title="Редагувати час"
         app:showAsAction="never" />
 
     <item
         android:id="@+id/action_show_notification"
-        android:title="Notify"
+        android:title="Оповістити"
         app:showAsAction="never" />
 </menu>
